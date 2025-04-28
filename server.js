@@ -8,8 +8,8 @@ const port = 3000;
 // MySQL 데이터베이스 연결 설정
 const connection = mysql.createConnection({
     host: 'localhost',
-    user: '202101467user',
-    password: '202101467pw',
+    user: 'user',
+    password: 'pw',
     database: 'agodaDB'
 });
 
