@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <!-- 부트스트랩 CSS 링크 추가 -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 추가적인 CSS 스타일링 */
+        body {
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+        }
+        #dataContainer table {
+        width: 100%;
+        border-collapse: collapse;
+        }
+        #dataContainer th, #dataContainer td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        #dataContainer th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #f2f2f2;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Admin Page🔑</h1>
+        <p class="lead">관리자 페이지에 오신 것을 환영합니다.</p>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">사용자 관리</h5>
+                <p class="card-text">사용자 정보를 관리합니다.</p>
+                <button id="userListBtn" class="btn btn-primary">사용자 목록 보기</button>
+                <button id="addUserBtn" class="btn btn-success">사용자 추가</button>
+                <button id="deleteUserBtn" class="btn btn-danger">사용자 삭제</button>
+                <button id="updateUserBtn" class="btn btn-warning">사용자 수정</button>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">숙소 관리</h5>
+                <p class="card-text">숙소 정보를 관리합니다.</p>
+                <button id="roomListBtn" class="btn btn-primary">숙소 목록 보기</button>
+                <button id="addRoomBtn" class="btn btn-success">숙소 추가</button>
+                <button id="deleteRoomBtn" class="btn btn-danger">숙소 삭제</button>
+                <button id="updateRoomBtn" class="btn btn-warning">숙소 수정</button>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">예약 관리</h5>
+                <p class="card-text">예약 정보를 관리합니다.</p>
+                <button id="reservationListBtn" class="btn btn-primary">예약 목록 보기</button>
+                <button id="addReservationBtn" class="btn btn-success">예약 추가</button>
+                <button id="deleteReservationBtn" class="btn btn-danger">예약 삭제</button>
+                <button id="updateReservationBtn" class="btn btn-warning">예약 수정</button>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">리뷰 관리</h5>
+                <p class="card-text">리뷰 정보를 관리합니다.</p>
+                <button id="reviewListBtn" class="btn btn-primary">리뷰 목록 보기</button>
+                <button id="addReviewBtn" class="btn btn-success">리뷰 추가</button>
+                <button id="deleteReviewBtn" class="btn btn-danger">리뷰 삭제</button>
+                <button id="updateReviewBtn" class="btn btn-warning">리뷰 수정</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 사용자 정보 입력 폼 -->
+    <div id="addUserForm" class="container" style="display: none;">
+        <h2 class="mt-5">사용자 추가</h2>
+        <form id="userForm">
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="custid">아이디</label>
+                <input type="text" class="form-control" id="custid" name="custid" required>
+            </div>
+            <div class="form-group">
+                <label for="custpw">비밀번호</label>
+                <input type="password" class="form-control" id="custpw" name="custpw" required>
+            </div>
+            <div class="form-group">
+                <label for="number">전화번호</label>
+                <input type="tel" class="form-control" id="number" name="number" required>
+            </div>
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <button type="submit" class="btn btn-primary">추가하기</button>
+        </form>
+    </div>
+
+    <!-- 사용자 삭제 입력 폼 -->
+    <div id="deleteUserFormContainer" class="container" style="display: none;">
+        <h2 class="mt-5">사용자 삭제</h2>
+        <form id="deleteUserForm">
+            <div class="form-group">
+                <label for="deleteCustid">아이디</label>
+                <input type="text" class="form-control" id="deleteCustid" name="custid" required>
+            </div>
+            <button type="submit" class="btn btn-danger">삭제하기</button>
+        </form>
+    </div>
+
+    <!-- 사용자 수정 입력 폼 -->
+    <div id="updateUserFormContainer" class="container" style="display: none;">
+        <h2 class="mt-5">사용자 수정</h2>
+        <form id="updateUserForm">
+            <div class="form-group">
+                <label for="updateCustid">아이디</label>
+                <input type="text" class="form-control" id="updateCustid" name="custid" required>
+            </div>
+            <div class="form-group">
+                <label for="updateName">이름</label>
+                <input type="text" class="form-control" id="updateName" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="updateCustpw">비밀번호</label>
+                <input type="password" class="form-control" id="updateCustpw" name="custpw" required>
+            </div>
+            <div class="form-group">
+                <label for="updateNumber">전화번호</label>
+                <input type="tel" class="form-control" id="updateNumber" name="number" required>
+            </div>
+            <div class="form-group">
+                <label for="updateEmail">이메일</label>
+                <input type="email" class="form-control" id="updateEmail" name="email" required>
+            </div>
+            <button type="submit" class="btn btn-warning">수정하기</button>
+        </form>
+    </div>
+
+    <!-- 숙소 정보 입력 폼 -->
+    <div id="addRoomForm" class="container" style="display: none;">
+        <h2 class="mt-5">숙소 추가</h2>
+        <form id="roomForm">
+            <div class="form-group">
+                <label for="roomname">숙소 이름</label>
+                <input type="text" class="form-control" id="roomname" name="roomname" required>
+            </div>
+            <div class="form-group">
+                <label for="roomtype">숙소 유형</label>
+                <input type="text" class="form-control" id="roomtype" name="roomtype" required>
+            </div>
+            <div class="form-group">
+                <label for="location">위치</label>
+                <input type="text" class="form-control" id="location" name="location" required>
+            </div>
+            <div class="form-group">
+                <label for="perprice">가격</label>
+                <input type="number" class="form-control" id="perprice" name="perprice" required>
+            </div>
+            <button type="submit" class="btn btn-primary">추가하기</button>
+        </form>
+    </div>
+
+    <!-- 숙소 삭제 입력 폼 -->
+    <div id="deleteRoomFormContainer" class="container" style="display: none;">
+        <h2 class="mt-5">숙소 삭제</h2>
+        <form id="deleteRoomForm">
+            <div class="form-group">
+                <label for="deleteRoomid">숙소 아이디</label>
+                <input type="number" class="form-control" id="deleteRoomid" name="roomid" required>
+            </div>
+            <button type="submit" class="btn btn-danger">삭제하기</button>
+        </form>
+    </div>
+
+    <!-- 숙소 수정 입력 폼 -->
+    <div id="updateRoomFormContainer" class="container" style="display: none;">
+        <h2 class="mt-5">숙소 수정</h2>
+        <form id="updateRoomForm">
+            <div class="form-group">
+                <label for="updateRoomid">숙소 아이디</label>
+                <input type="number" class="form-control" id="updateRoomid" name="roomid" required>
+            </div>
+            <div class="form-group">
+                <label for="updateRoomname">숙소 이름</label>
+                <input type="text" class="form-control" id="updateRoomname" name="roomname" required>
+            </div>
+            <div class="form-group">
+                <label for="updateRoomtype">숙소 유형</label>
+                <input type="text" class="form-control" id="updateRoomtype" name="roomtype" required>
+            </div>
+            <div class="form-group">
+                <label for="updateLocation">위치</label>
+                <input type="text" class="form-control" id="updateLocation" name="location" required>
+            </div>
+            <div class="form-group">
+                <label for="updatePerprice">가격</label>
+                <input type="number" class="form-control" id="updatePerprice" name="perprice" required>
+            </div>
+            <button type="submit" class="btn btn-warning">수정하기</button>
+        </form>
+    </div>
+
+    <!-- 예약 정보 입력 폼 -->
+    <div id="addReservationForm" class="container" style="display: none;">
+        <h2 class="mt-5">예약 추가</h2>
+        <form id="reservationForm">
+            <div class="form-group">
+                <label for="roomid">숙소 아이디</label>
+                <input type="number" class="form-control" id="roomid" name="roomid" required>
+            </div>
+            <div class="form-group">
+                <label for="custid">사용자 아이디</label>
+                <input type="text" class="form-control" id="custid" name="custid" required>
+            </div>
+            <div class="form-group">
+                <label for="checkin">체크인 날짜</label>
+                <input type="date" class="form-control" id="checkin" name="checkin" required>
+            </div>
+            <div class="form-group">
+                <label for="checkout">체크아웃 날짜</label>
+                <input type="date" class="form-control" id="checkout" name="checkout" required>
+            </div>
+            <div class="form-group">
+                <label for="perprice">1박 가격</label>
+                <input type="number" class="form-control" id="perprice" name="perprice" required>
+            </div>
+            <button type="submit" class="btn btn-primary">추가하기</button>
+        </form>
+    </div>
+
+    <!-- 예약 삭제 입력 폼 -->
+    <div id="deleteReservationFormContainer" class="container" style="display: none;">
+        <h2 class="mt-5">예약 삭제</h2>
+        <form id="deleteReservationForm">
+            <div class="form-group">
+                <label for="deleteReservationid">예약 아이디</label>
+                <input type="number" class="form-control" id="deleteReservationid" name="reservid" required>
+            </div>
+            <button type="submit" class="btn btn-danger">삭제하기</button>
+        </form>
+    </div>
+
+    <!-- 예약 수정 입력 폼 -->
+    <div id="updateReservationFormContainer" class="container" style="display: none;">
+        <h2 class="mt-5">예약 수정</h2>
+        <form id="updateReservationForm">
+            <div class="form-group">
+                <label for="updateReservid">예약 아이디</label>
+                <input type="number" class="form-control" id="updateReservid" name="reservid" required>
+            </div>
+            <div class="form-group">
+                <label for="updateRoomid">숙소 아이디</label>
+                <input type="number" class="form-control" id="updateRoomid" name="roomid" required>
+            </div>
+            <div class="form-group">
+                <label for="updateCustid">사용자 아이디</label>
+                <input type="text" class="form-control" id="updateCustid" name="custid" required>
+            </div>
+            <div class="form-group">
+                <label for="updateCheckin">체크인 날짜</label>
+                <input type="date" class="form-control" id="updateCheckin" name="checkin" required>
+            </div>
+            <div class="form-group">
+                <label for="updateCheckout">체크아웃 날짜</label>
+                <input type="date" class="form-control" id="updateCheckout" name="checkout" required>
+            </div>
+            <div class="form-group">
+                <label for="updatePerprice">1박 가격</label>
+                <input type="number" class="form-control" id="updatePerprice" name="perprice" required>
+            </div>
+            <button type="submit" class="btn btn-warning">수정하기</button>
+        </form>
+    </div>
+
+    <!-- 리뷰 정보 입력 폼 -->
+    <div id="addReviewForm" class="container" style="display: none;">
+        <h2 class="mt-5">리뷰 추가</h2>
+        <form id="reviewForm">
+            <div class="form-group">
+                <label for="roomid">숙소 아이디</label>
+                <input type="number" class="form-control" id="roomid" name="roomid" required>
+            </div>
+            <div class="form-group">
+                <label for="custid">사용자 아이디</label>
+                <input type="text" class="form-control" id="custid" name="custid" required>
+            </div>
+            <div class="form-group">
+                <label for="contents">리뷰 내용</label>
+                <textarea class="form-control" id="contents" name="contents" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="starrating">별점</label>
+                <input type="number" class="form-control" id="starrating" name="starrating" required>
+            </div>
+            <button type="submit" class="btn btn-primary">추가하기</button>
+        </form>
+    </div>
+
+    <!-- 리뷰 삭제 입력 폼 -->
+    <div id="deleteReviewFormContainer" class="container" style="display: none;">
+        <h2 class="mt-5">리뷰 삭제</h2>
+        <form id="deleteReviewForm">
+            <div class="form-group">
+                <label for="deleteReviewid">리뷰 아이디</label>
+                <input type="number" class="form-control" id="deleteReviewid" name="reviewid" required>
+            </div>
+            <button type="submit" class="btn btn-danger">삭제하기</button>
+        </form>
+    </div>
+
+    <!-- 리뷰 수정 입력 폼 -->
+    <div id="updateReviewFormContainer" class="container" style="display: none;">
+        <h2 class="mt-5">리뷰 수정</h2>
+        <form id="updateReviewForm">
+            <div class="form-group">
+                <label for="updateReviewid">리뷰 아이디</label>
+                <input type="number" class="form-control" id="updateReviewid" name="reviewid" required>
+            </div>
+            <div class="form-group">
+                <label for="updateRoomid">숙소 아이디</label>
+                <input type="number" class="form-control" id="updateRoomid" name="roomid" required>
+            </div>
+            <div class="form-group">
+                <label for="updateCustid">사용자 아이디</label>
+                <input type="text" class="form-control" id="updateCustid" name="custid" required>
+            </div>
+            <div class="form-group">
+                <label for="updateContents">리뷰 내용</label>
+                <textarea class="form-control" id="updateContents" name="contents" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="updateStarrating">별점</label>
+                <input type="number" class="form-control" id="updateStarrating" name="starrating" required>
+            </div>
+            <button type="submit" class="btn btn-warning">수정하기</button>
+        </form>
+    </div>
+
+    <!-- 목록을 표시할 공간 -->
+    <div id="dataContainer" class="mt-5"></div>
+
+    <!-- 부트스트랩 자바스크립트 및 jQuery 스크립트 추가 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- 사용자 목록, 숙소 목록, 예약 목록, 리뷰 목록을 요청하는 JavaScript 코드 추가 -->
+    <script>
+        // 사용자 목록, 숙소 목록, 예약 목록, 리뷰 목록을 요청하는 JavaScript 코드 추가
+        document.getElementById('userListBtn').addEventListener('click', function() {
+            fetch('/admin/users')
+                .then(response => response.json())
+                .then(data => {
+                    // 사용자 목록을 표시할 공간에 데이터를 테이블 형식으로 출력
+                    displayData(data, ['custnum', 'name', 'custid', 'custpw', 'number', 'email']);
+                })
+                .catch(error => {
+                    console.error('Error fetching user list:', error);
+                });
+        });
+
+        document.getElementById('roomListBtn').addEventListener('click', function() {
+            fetch('/admin/rooms')
+                .then(response => response.json())
+                .then(data => {
+                    // 숙소 목록을 표시할 공간에 데이터를 테이블 형식으로 출력
+                    displayData(data, ['roomid', 'roomname', 'roomtype', 'location', 'perprice']);
+                })
+                .catch(error => {
+                    console.error('Error fetching room list:', error);
+                });
+        });
+
+        document.getElementById('reservationListBtn').addEventListener('click', function() {
+            fetch('/admin/reservations')
+                .then(response => response.json())
+                .then(data => {
+                    // 예약 목록을 표시할 공간에 데이터를 테이블 형식으로 출력
+                    displayData(data, ['reservid', 'custnum', 'roomid', 'checkin', 'checkout', 'totalprice']);
+                })
+                .catch(error => {
+                    console.error('Error fetching reservation list:', error);
+                });
+        });
+
+        document.getElementById('reviewListBtn').addEventListener('click', function() {
+            fetch('/admin/reviews')
+                .then(response => response.json())
+                .then(data => {
+                    // 리뷰 목록을 표시할 공간에 데이터를 테이블 형식으로 출력
+                    displayData(data, ['reviewid', 'custnum', 'roomid', 'contents', 'starrating']);
+                })
+                .catch(error => {
+                    console.error('Error fetching review list:', error);
+                });
+        });
+
+        // 사용자 추가 버튼 클릭 시
+        document.getElementById('addUserBtn').addEventListener('click', function() {
+            // 사용자 추가 폼을 보여줍니다.
+            document.getElementById('addUserForm').style.display = 'block';
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 사용자 정보 입력 폼 제출 시
+        document.getElementById('userForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 사용자 정보를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/addUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('사용자 추가 응답:', data);
+                alert('사용자가 성공적으로 추가되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error adding user:', error);
+                alert('사용자 추가에 실패했습니다.');
+            });
+
+            // 사용자 추가 폼을 숨깁니다.
+            document.getElementById('addUserForm').style.display = 'none';
+        });
+
+        // 사용자 삭제 버튼 클릭 시
+        document.getElementById('deleteUserBtn').addEventListener('click', function() {
+            // 사용자 삭제 폼을 보여줍니다.
+            document.getElementById('deleteUserFormContainer').style.display = 'block';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 사용자 삭제 폼 제출 시
+        document.getElementById('deleteUserForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 사용자 아이디를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/deleteUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('사용자 삭제 응답:', data);
+                alert('사용자가 성공적으로 삭제되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+                alert('사용자 삭제에 실패했습니다.');
+            });
+
+            // 사용자 삭제 폼을 숨깁니다.
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+        });
+
+        // 사용자 수정 버튼 클릭 시
+        document.getElementById('updateUserBtn').addEventListener('click', function() {
+            // 사용자 수정 폼을 보여줍니다.
+            document.getElementById('updateUserFormContainer').style.display = 'block';
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 사용자 수정 폼 제출 시
+        document.getElementById('updateUserForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 사용자 정보를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/updateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('사용자 수정 응답:', data);
+                alert('사용자가 성공적으로 수정되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error updating user:', error);
+                alert('사용자 수정에 실패했습니다.');
+            });
+
+            // 사용자 수정 폼을 숨깁니다.
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+        });
+
+        // 숙소 추가 버튼 클릭 시
+        document.getElementById('addRoomBtn').addEventListener('click', function() {
+            // 숙소 추가 폼을 보여줍니다.
+            document.getElementById('addRoomForm').style.display = 'block';
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 숙소 정보 입력 폼 제출 시
+        document.getElementById('roomForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 숙소 정보를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/addRoom', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('숙소 추가 응답:', data);
+                alert('숙소가 성공적으로 추가되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error adding room:', error);
+                alert('숙소 추가에 실패했습니다.');
+            });
+
+            // 숙소 추가 폼을 숨깁니다.
+            document.getElementById('addRoomForm').style.display = 'none';
+        });
+
+        // 숙소 삭제 버튼 클릭 시
+        document.getElementById('deleteRoomBtn').addEventListener('click', function() {
+            // 숙소 삭제 폼을 보여줍니다.
+            document.getElementById('deleteRoomFormContainer').style.display = 'block';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 숙소 삭제 폼 제출 시
+        document.getElementById('deleteRoomForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 숙소 아이디를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/deleteRoom', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('숙소 삭제 응답:', data);
+                alert('숙소가 성공적으로 삭제되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error deleting room:', error);
+                alert('숙소 삭제에 실패했습니다.');
+            });
+
+            // 숙소 삭제 폼을 숨깁니다.
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+        });
+
+        // 숙소 수정 버튼 클릭 시
+        document.getElementById('updateRoomBtn').addEventListener('click', function() {
+            // 숙소 수정 폼을 보여줍니다.
+            document.getElementById('updateRoomFormContainer').style.display = 'block';
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 숙소 수정 폼 제출 시
+        document.getElementById('updateRoomForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 숙소 정보를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/updateRoom', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('숙소 수정 응답:', data);
+                alert('숙소가 성공적으로 수정되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error updating room:', error);
+                alert('숙소 수정에 실패했습니다.');
+            });
+
+            // 숙소 수정 폼을 숨깁니다.
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+        });
+
+        // 예약 추가 버튼 클릭 시
+        document.getElementById('addReservationBtn').addEventListener('click', function() {
+            // 예약 추가 폼을 보여줍니다.
+            document.getElementById('addReservationForm').style.display = 'block';
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 예약 정보 입력 폼 제출 시
+        document.getElementById('reservationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 예약 정보를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/addReservation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('예약 추가 응답:', data);
+                alert('예약이 성공적으로 추가되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error adding reservation:', error);
+                alert('예약 추가에 실패했습니다.');
+            });
+
+            // 예약 추가 폼을 숨깁니다.
+            document.getElementById('addReservationForm').style.display = 'none';
+        });
+
+        // 예약 삭제 버튼 클릭 시
+        document.getElementById('deleteReservationBtn').addEventListener('click', function() {
+            // 예약 삭제 폼을 보여줍니다.
+            document.getElementById('deleteReservationFormContainer').style.display = 'block';
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 예약 삭제 폼 제출 시
+        document.getElementById('deleteReservationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 예약 아이디를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/deleteReservation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('예약 삭제 응답:', data);
+                alert('예약이 성공적으로 삭제되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error deleting reservation:', error);
+                alert('예약 삭제에 실패했습니다.');
+            });
+
+            // 예약 삭제 폼을 숨깁니다.
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+        });
+
+        // 예약 수정 버튼 클릭 시
+        document.getElementById('updateReservationBtn').addEventListener('click', function() {
+            // 예약 수정 폼을 보여줍니다.
+            document.getElementById('updateReservationFormContainer').style.display = 'block';
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 예약 수정 폼 제출 시
+        document.getElementById('updateReservationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 예약 정보를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/updateReservation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('예약 수정 응답:', data);
+                alert('예약이 성공적으로 수정되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error updating reservation:', error);
+                alert('예약 수정에 실패했습니다.');
+            });
+
+            // 예약 수정 폼을 숨깁니다.
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+        });
+
+        // 리뷰 추가 버튼 클릭 시
+        document.getElementById('addReviewBtn').addEventListener('click', function() {
+            // 리뷰 추가 폼을 보여줍니다.
+            document.getElementById('addReviewForm').style.display = 'block';
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 리뷰 정보 입력 폼 제출 시
+        document.getElementById('reviewForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 리뷰 정보를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/addReview', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('리뷰 추가 응답:', data);
+                alert('리뷰가 성공적으로 추가되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error adding review:', error);
+                alert('리뷰 추가에 실패했습니다.');
+            });
+
+            // 리뷰 추가 폼을 숨깁니다.
+            document.getElementById('addReviewForm').style.display = 'none';
+        });
+
+        // 리뷰 삭제 버튼 클릭 시
+        document.getElementById('deleteReviewBtn').addEventListener('click', function() {
+            // 리뷰 삭제 폼을 보여줍니다.
+            document.getElementById('deleteReviewFormContainer').style.display = 'block';
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 리뷰 삭제 폼 제출 시
+        document.getElementById('deleteReviewForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 리뷰 아이디를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/deleteReview', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('리뷰 삭제 응답:', data);
+                alert('리뷰가 성공적으로 삭제되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error deleting review:', error);
+                alert('리뷰 삭제에 실패했습니다.');
+            });
+
+            // 리뷰 삭제 폼을 숨깁니다.
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+        });
+
+        // 리뷰 수정 버튼 클릭 시
+        document.getElementById('updateReviewBtn').addEventListener('click', function() {
+            // 리뷰 수정 폼을 보여줍니다.
+            document.getElementById('updateReviewFormContainer').style.display = 'block';
+            document.getElementById('deleteUserFormContainer').style.display = 'none';
+            document.getElementById('updateUserFormContainer').style.display = 'none';
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('deleteRoomFormContainer').style.display = 'none';
+            document.getElementById('updateRoomFormContainer').style.display = 'none';
+            document.getElementById('addRoomForm').style.display = 'none';
+            document.getElementById('addReservationForm').style.display = 'none';
+            document.getElementById('deleteReservationFormContainer').style.display = 'none';
+            document.getElementById('updateReservationFormContainer').style.display = 'none';
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('deleteReviewFormContainer').style.display = 'none';
+        });
+
+        // 리뷰 수정 폼 제출 시
+        document.getElementById('updateReviewForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 리뷰 정보를 가져옵니다.
+            const formData = new FormData(this);
+            const jsonData = Object.fromEntries(formData.entries()); // FormData를 JSON 형식으로 변환
+            
+            // 서버로 데이터를 전송합니다.
+            fetch('/admin/updateReview', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('리뷰 수정 응답:', data);
+                alert('리뷰가 성공적으로 수정되었습니다.');
+            })
+            .catch(error => {
+                console.error('Error updating review:', error);
+                alert('리뷰 수정에 실패했습니다.');
+            });
+
+            // 리뷰 수정 폼을 숨깁니다.
+            document.getElementById('updateReviewFormContainer').style.display = 'none';
+        });
+
+        // 받은 데이터를 테이블 형식으로 화면에 출력하는 함수
+        function displayData(data, columns) {
+            if (!data.length) {
+                document.getElementById('dataContainer').innerHTML = '<p>데이터가 없습니다.</p>';
+                return;
+            }
+
+            let table = '<table><thead><tr>';
+            // 테이블 헤더 생성
+            columns.forEach(col => {
+                table += `<th>${col}</th>`;
+            });
+            table += '</tr></thead><tbody>';
+            
+            // 테이블 데이터 생성
+            data.forEach(item => {
+                table += '<tr>';
+                columns.forEach(col => {
+                    table += `<td>${item[col]}</td>`;
+                });
+                table += '</tr>';
+            });
+
+            table += '</tbody></table>';
+            document.getElementById('dataContainer').innerHTML = table;
+        }
+    </script>
+</body>
+</html>

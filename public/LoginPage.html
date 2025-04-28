@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agoda 로그인</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        #loginResult {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #loginResult.success {
+            color: #008000;
+        }
+        #loginResult.error {
+            color: #ff0000;
+        }
+        .admin-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .admin-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .admin-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Agoda 로그인</h2>
+        <form id="loginForm">
+            <label for="custid">아이디:</label>
+            <input type="text" id="custid" name="custid" required>
+        
+            <label for="custpw">비밀번호:</label>
+            <input type="password" id="custpw" name="custpw" required>
+        
+            <button type="submit">로그인</button>
+        </form>
+
+        <div id="loginResult"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+            const custid = document.getElementById('custid').value;
+            const custpw = document.getElementById('custpw').value;
+    
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ custid, custpw })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const loginResult = document.getElementById('loginResult');
+                if (data.success) {
+                    sessionStorage.setItem('custid', custid);
+    
+                    if (custid === 'Admin' && custpw === 'admin') {
+                        loginResult.textContent = '관리자 로그인 성공!';
+                        setTimeout(() => {
+                            window.location.href = '/admin.html';
+                        }, 1000);
+                    } else {
+                        loginResult.textContent = '로그인 성공!';
+                        setTimeout(() => {
+                            window.location.href = '/main.html';
+                        }, 1000);
+                    }
+                    loginResult.className = 'success';
+                } else {
+                    loginResult.textContent = '로그인 실패: ' + data.message;
+                    loginResult.className = 'error';
+                }
+            })
+            .catch(error => {
+                console.error('Error logging in:', error);
+                const loginResult = document.getElementById('loginResult');
+                loginResult.textContent = '로그인 중 오류 발생';
+                loginResult.className = 'error';
+            });
+        });
+    </script>
+    
+</body>
+</html>
